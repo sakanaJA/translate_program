@@ -10,38 +10,37 @@ def extract_audio_from_video(video_path, output_audio_path):
     audio_clip.write_audiofile(output_audio_path)
     audio_clip.close()
 
-# 音声を文字起こしし、字幕ファイルを生成する関数
-def transcribe_and_generate_subtitles(audio_path, output_srt_path, target_language='ja'):
+# 音声を文字起こしし、英語と日本語の字幕を生成する関数
+def transcribe_and_generate_bilingual_subtitles(audio_path, output_srt_path):
     # Whisperモデルの読み込み
     model = whisper.load_model("base")
 
     # 音声ファイルを文字起こし
     result = model.transcribe(audio_path)
 
-    # 日本語または英語に翻訳
+    # 翻訳用のインスタンス
     translator = Translator()
-    translated_texts = []
-    for segment in result['segments']:
-        text = segment['text']
-        if target_language != 'en':
-            translated = translator.translate(text, dest=target_language).text
-        else:
-            translated = text
-        translated_texts.append((segment['start'], segment['end'], translated))
-    
-    # .srtファイルとして出力
+
+    # 字幕ファイルを作成
     subs = pysrt.SubRipFile()
-    for idx, (start, end, text) in enumerate(translated_texts):
+    for idx, segment in enumerate(result['segments']):
+        start = segment['start']
+        end = segment['end']
+        english_text = segment['text']
+
+        # 英語の後に日本語翻訳を追加
+        japanese_text = translator.translate(english_text, dest='ja').text
+
         # 字幕のインデックス
         sub = pysrt.SubRipItem()
         sub.index = idx + 1
-        
+
         # 開始・終了時間のフォーマット
         sub.start.seconds = start
         sub.end.seconds = end
-        
-        # 翻訳されたテキストを追加
-        sub.text = text
+
+        # 英語と日本語を追加
+        sub.text = f"{english_text}\n{japanese_text}"
         subs.append(sub)
     
     # srtファイルに保存
@@ -53,10 +52,6 @@ audio_path = r'E:\gameplay\Desktop\extracted_audio.wav'
 
 extract_audio_from_video(video_path, audio_path)
 
-# 日本語字幕を作成
-output_srt_path_japanese = 'output_japanese.srt'
-transcribe_and_generate_subtitles(audio_path, output_srt_path_japanese, target_language='ja')
-
-# 英語字幕を作成
-output_srt_path_english = 'output_english.srt'
-transcribe_and_generate_subtitles(audio_path, output_srt_path_english, target_language='en')
+# 英語と日本語が交互に並ぶ字幕ファイルを作成
+output_srt_path_bilingual = 'output_bilingual.srt'
+transcribe_and_generate_bilingual_subtitles(audio_path, output_srt_path_bilingual)
