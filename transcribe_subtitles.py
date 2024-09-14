@@ -71,17 +71,22 @@ def save_subtitles_to_srt(subtitles, output_srt_path):
     # 一時ファイルを削除
     os.remove(temp_srt_path)
 
+# 動画ファイルの名前から字幕ファイル名を設定
+videoname = 'Desktop 2024.09.12 - 20.47.59.19.DVR.mp4'
+
 # 動画ファイルを指定して音声を抽出
-video_path = r'E:\gameplay\Desktop\Desktop 2024.09.13 - 22.03.51.04.DVR.mp4'
-audio_path = r'E:\gameplay\Desktop\extracted_audio.wav'
+video_path = rf'E:\gameplay\Desktop\{videoname}'
+audio_path = rf'E:\gameplay\Desktop\{os.path.splitext(videoname)[0]}_audio.wav'
 
 extract_audio_from_video(video_path, audio_path)
 
 # 英語と日本語が交互に並ぶ字幕データを取得
 subtitles = transcribe_and_generate_bilingual_subtitles(audio_path)
 
+# 字幕ファイルのパスを動画ファイル名に基づいて作成
+output_srt_path = rf'E:\gameplay\Desktop\{os.path.splitext(videoname)[0]}_subtitles.srt'
+
 # 字幕をSRTファイルに保存 (CR形式で改行)
-output_srt_path = r'E:\gameplay\Desktop\output_subtitles_mac.srt'
 save_subtitles_to_srt(subtitles, output_srt_path)
 
 print(f"字幕ファイルが生成されました: {output_srt_path}")
