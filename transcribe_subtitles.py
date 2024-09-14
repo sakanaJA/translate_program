@@ -4,6 +4,9 @@ from googletrans import Translator
 import pysrt
 import os
 
+# 動画ファイルの名前から字幕ファイル名を設定
+videoname = 'Desktop 2024.09.12 - 20.19.00.14.DVR.mp4'
+
 # ImageMagickのバイナリパスを指定
 os.environ["IMAGEMAGICK_BINARY"] = r"C:\Program Files\ImageMagick-7.1.1-Q16-HDRI\magick.exe"
 
@@ -71,12 +74,10 @@ def save_subtitles_to_srt(subtitles, output_srt_path):
     # 一時ファイルを削除
     os.remove(temp_srt_path)
 
-# 動画ファイルの名前から字幕ファイル名を設定
-videoname = 'Desktop 2024.09.12 - 20.47.59.19.DVR.mp4'
 
 # 動画ファイルを指定して音声を抽出
 video_path = rf'E:\gameplay\Desktop\{videoname}'
-audio_path = rf'E:\gameplay\Desktop\{os.path.splitext(videoname)[0]}_audio.wav'
+audio_path = rf'E:\gameplay\Desktop\temp.wav'
 
 extract_audio_from_video(video_path, audio_path)
 
@@ -84,7 +85,7 @@ extract_audio_from_video(video_path, audio_path)
 subtitles = transcribe_and_generate_bilingual_subtitles(audio_path)
 
 # 字幕ファイルのパスを動画ファイル名に基づいて作成
-output_srt_path = rf'E:\gameplay\Desktop\{os.path.splitext(videoname)[0]}_subtitles.srt'
+output_srt_path = rf'E:\gameplay\subtitle\{os.path.splitext(videoname)[0]}_subtitles.srt'
 
 # 字幕をSRTファイルに保存 (CR形式で改行)
 save_subtitles_to_srt(subtitles, output_srt_path)
